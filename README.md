@@ -1,18 +1,24 @@
 # AI Meeting Intelligence
 
-A meeting-processing pipeline that transforms a transcript into structured notes, decisions, and action items. It is designed around a provider-neutral transcription interface so Whisper or another speech-to-text service can be integrated without coupling the business logic to a vendor.
+A meeting-processing pipeline that transforms speech transcripts into structured notes, decisions, and action items. It separates speech recognition from downstream business logic so the application can swap ASR providers without redesigning the pipeline.
 
 ## Pipeline
 
-`Audio -> Transcription -> Segmentation -> Summary -> Decisions + Action Items`
+```text
+Audio -> ASR Adapter -> Transcript Segments -> Insight Extraction
+                                             |-> Summary
+                                             |-> Decisions
+                                             `-> Action Items
+```
 
-## Highlights
+## Engineering features
 
-- Transcript normalization and segment timestamps
-- Topic/decision extraction
-- Action-item detection with owner and due-date fields when present
-- Structured JSON output for downstream systems
-- Testable local pipeline with no API keys required
+- Provider-neutral transcription interface
+- Whisper-compatible ASR adapter
+- Timestamp/speaker-aware transcript model
+- Structured decision and action-item extraction
+- JSON-friendly output for downstream workflow systems
+- Deterministic local tests without API credentials
 
 ## Run
 
@@ -22,4 +28,4 @@ python -m app.pipeline
 pytest -q
 ```
 
-The repository intentionally keeps speech recognition behind an adapter boundary. This makes it easy to connect OpenAI Whisper or another ASR provider later while keeping tests deterministic.
+The default tests use text transcripts. Configure an actual ASR client only when running audio ingestion.
